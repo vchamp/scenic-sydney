@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Scenic Sydney</string>
+    <string name="title_activity_map">Scenic Sydney</string>
+    <string name="title">Title</string>
+    <string name="coordinates">Coordinates: %.2f, %.2f</string>
+    <string name="save">Save</string>
+    <string name="list">List</string>
+    <string name="map">Map</string>
+    <string name="add_note">Add note</string>
+    <string name="ok">OK</string>
+    <string name="click_to_add_location">Click on the map to add a location</string>
+    <string name="location">Location</string>
+    <string name="dismiss_new_location">Dismiss new location?</string>
+    <string name="delete_location">Delete location?</string>
+    <string name="delete">Delete</string>
+</resources>

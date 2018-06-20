@@ -1,0 +1,159 @@
+package com.epam.scenicsydney.location.edit
+
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
+import android.os.Bundle
+import android.support.design.widget.CoordinatorLayout
+import android.support.design.widget.Snackbar
+import android.support.v4.app.Fragment
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
+import android.view.*
+import com.epam.scenicsydney.R
+import com.epam.scenicsydney.model.Note
+import com.epam.scenicsydney.note.EditNoteFragment
+import com.epam.scenicsydney.note.EditNoteViewModel
+import kotlinx.android.synthetic.main.fragment_edit_location.*
+import kotlinx.android.synthetic.main.item_note.view.*
+
+class EditLocationFragment : Fragment() {
+
+    companion object {
+        const val FRAGMENT_TAG = "edit_location"
+        private const val ARG_LOCATION_ID = "location_id"
+        private const val ARG_IS_NEW = "is_new"
+
+        fun newInstance(locationId: Long, isNew: Boolean) = EditLocationFragment().apply {
+            arguments = Bundle().apply {
+                putLong(ARG_LOCATION_ID, locationId)
+                putBoolean(ARG_IS_NEW, isNew)
+            }
+        }
+    }
+
+    private val locationId by lazy {
+        arguments?.getLong(ARG_LOCATION_ID)
+                ?: throw IllegalStateException("Location id not defined")
+    }
+
+    private val isNew by lazy {
+        arguments?.getBoolean(ARG_IS_NEW) ?: false
+    }
+
+    private val viewModel: EditLocationViewModel by lazy {
+        val activity = activity ?: throw IllegalStateException("Not attached")
+        ViewModelProviders.of(activity,
+                EditLocationViewModelFactory(locationId))
+                .get(locationId.toString(), EditLocationViewModel::class.java)
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        setHasOptionsMenu(true)
+        return inflater.inflate(R.layout.fragment_edit_location, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        notesRecyclerView.layoutManager = LinearLayoutManager(context)
+        floatingActionButton.setOnClickListener { openAddNote() }
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+
+        viewModel.getLocation().observe(this, Observer { location ->
+            if (location != null) {
+                coordsTextView.text = getString(R.string.coordinates, location.latitude, location.longitude)
+                titleEditText.setText(location.name)
+            }
+        })
+
+        viewModel.getNotes().observe(this, Observer { notes ->
+            notesRecyclerView.adapter = NotesAdapter(notes ?: emptyList())
+        })
+
+        viewModel.getSaveCheckCommand().observe(this, Observer { saveCheck ->
+            if (saveCheck == true) {
+                val title = titleEditText.text.toString()
+                if (title.isBlank()) {
+                    if (isNew) {
+                        val snackbar = Snackbar.make(view as CoordinatorLayout, R.string.dismiss_new_location, Snackbar.LENGTH_LONG)
+                        snackbar.setAction(R.string.ok) {
+                            viewModel.deleteLocation()
+                            viewModel.close()
+                        }
+                        snackbar.show()
+                    } else {
+                        viewModel.close()
+                    }
+                } else {
+                    viewModel.save(title)
+                    viewModel.close()
+                }
+            }
+        })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        activity?.title = getString(R.string.location)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        menu.clear()
+        inflater.inflate(R.menu.edit_location, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.delete -> {
+                val snackbar = Snackbar.make(view as CoordinatorLayout, R.string.delete_location, Snackbar.LENGTH_LONG)
+                snackbar.setAction(R.string.ok) {
+                    viewModel.deleteLocation()
+                    viewModel.close()
+                }
+                snackbar.show()
+            }
+            else -> {
+                super.onOptionsItemSelected(item)
+                return false
+            }
+        }
+        return true
+    }
+
+    private fun openAddNote() {
+        val fragment = EditNoteFragment()
+        val fragmentManager = fragmentManager ?: return
+        fragmentManager.beginTransaction().add(R.id.fragmentContainer, fragment).addToBackStack(null).commit()
+        val editNoteViewModel = ViewModelProviders.of(this).get(EditNoteViewModel::class.java)
+        editNoteViewModel.setSelectedNote(Note(locationId))
+        editNoteViewModel.getSelectedNote().observe(this, Observer { note ->
+            if (note != null && !note.text.isBlank()) {
+                viewModel.addNote(note)
+                editNoteViewModel.getSelectedNote().removeObservers(this)
+                fragmentManager.popBackStack()
+            }
+        })
+    }
+
+    inner class NotesAdapter(private val mNotes: List<Note>) : RecyclerView.Adapter<NoteViewHolder>() {
+        override fun getItemCount(): Int = mNotes.size
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
+            val view = LayoutInflater.from(context).inflate(R.layout.item_note, parent, false)
+            return NoteViewHolder(view)
+        }
+
+        override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
+            holder.setText(mNotes[position].text)
+        }
+    }
+
+    inner class NoteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        fun setText(text: String) {
+            itemView.textView.text = text
+        }
+    }
+}
