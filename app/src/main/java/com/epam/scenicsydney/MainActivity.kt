@@ -1,27 +1,32 @@
 package com.epam.scenicsydney
 
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import com.epam.scenicsydney.location.edit.EditLocationActivity
 import com.epam.scenicsydney.location.list.LocationsListFragment
 import com.epam.scenicsydney.location.map.MapFragment
 import kotlinx.android.synthetic.main.activity_main.*
 
+/**
+ * Main activity of the application. Contains map and locations list fragments.
+ */
 class MainActivity : AppCompatActivity(), Navigation {
 
     private companion object {
         const val FRAGMENT_TAG_MAP = "map"
         const val FRAGMENT_TAG_LIST = "list"
-        const val STATE_LIST_MODE = "list_mode"
+        const val SELECTED_NAV_ITEM_ID = "selected_nav_item_id"
     }
 
-    private var isListMode = false
+    private var selectedNavItemId = R.id.map
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         navigationView.setOnNavigationItemSelectedListener {
+            selectedNavItemId = it.itemId
             when (it.itemId) {
                 R.id.map -> showMap()
                 R.id.list -> showList()
@@ -29,47 +34,32 @@ class MainActivity : AppCompatActivity(), Navigation {
             true
         }
 
-        if (savedInstanceState?.getBoolean(STATE_LIST_MODE) == true) {
-            navigationView.selectedItemId = R.id.list
-//            showList()
-        } else {
-            navigationView.selectedItemId = R.id.map
-//            showMap()
-        }
+        navigationView.selectedItemId = savedInstanceState?.getInt(SELECTED_NAV_ITEM_ID, R.id.map) ?: R.id.map
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putBoolean(STATE_LIST_MODE, isListMode)
+        outState.putInt(SELECTED_NAV_ITEM_ID, selectedNavItemId)
     }
 
     private fun showMap() {
-        isListMode = false
-        val existingFragment = supportFragmentManager.findFragmentByTag(FRAGMENT_TAG_MAP)
-        if (existingFragment != null) {
-            val transaction = supportFragmentManager.beginTransaction().show(existingFragment)
-            supportFragmentManager.findFragmentByTag(FRAGMENT_TAG_LIST)?.let {
-                transaction.hide(it)
-            }
-            transaction.commit()
-        } else {
-            val mapFragment = MapFragment()
-            supportFragmentManager.beginTransaction().add(R.id.fragmentContainer, mapFragment, FRAGMENT_TAG_MAP).commit()
-        }
+        switchFragments(FRAGMENT_TAG_MAP, FRAGMENT_TAG_LIST, ::MapFragment)
     }
 
     private fun showList() {
-        isListMode = true
-        val existingFragment = supportFragmentManager.findFragmentByTag(FRAGMENT_TAG_LIST)
+        switchFragments(FRAGMENT_TAG_LIST, FRAGMENT_TAG_MAP, ::LocationsListFragment)
+    }
+
+    private fun switchFragments(showFragmentTag: String, hideFragmentTag: String, newFragmentConstructor: () -> Fragment) {
+        val existingFragment = supportFragmentManager.findFragmentByTag(showFragmentTag)
         if (existingFragment != null) {
             val transaction = supportFragmentManager.beginTransaction().show(existingFragment)
-            supportFragmentManager.findFragmentByTag(FRAGMENT_TAG_MAP)?.let {
+            supportFragmentManager.findFragmentByTag(hideFragmentTag)?.let {
                 transaction.hide(it)
             }
             transaction.commit()
         } else {
-            val listFragment = LocationsListFragment()
-            supportFragmentManager.beginTransaction().add(R.id.fragmentContainer, listFragment, FRAGMENT_TAG_LIST).commit()
+            supportFragmentManager.beginTransaction().add(R.id.fragmentContainer, newFragmentConstructor(), showFragmentTag).commit()
         }
     }
 

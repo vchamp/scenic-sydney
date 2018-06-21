@@ -17,8 +17,12 @@ import com.epam.scenicsydney.location.sortByDistanceFromCenter
 import com.epam.scenicsydney.model.Location
 import kotlinx.android.synthetic.main.item_location.view.*
 
+/**
+ * Simple fragment with locations list sorted by distance from Sydney center.
+ */
 class LocationsListFragment : Fragment() {
 
+    // activity scope allows to reuse the same view model for map and list fragments
     private val viewModel: LocationsViewModel by lazy {
         val activity = activity ?: throw IllegalStateException("Not attached")
         ViewModelProviders.of(activity).get(LocationsViewModel::class.java)

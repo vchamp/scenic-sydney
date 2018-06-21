@@ -3,9 +3,9 @@ package com.epam.scenicsydney.location.edit
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.support.design.widget.CoordinatorLayout
-import android.support.design.widget.Snackbar
+import android.support.annotation.StringRes
 import android.support.v4.app.Fragment
+import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
@@ -77,12 +77,7 @@ class EditLocationFragment : Fragment() {
                 val title = titleEditText.text.toString()
                 if (title.isBlank()) {
                     if (isNew) {
-                        val snackbar = Snackbar.make(view as CoordinatorLayout, R.string.dismiss_new_location, Snackbar.LENGTH_LONG)
-                        snackbar.setAction(R.string.ok) {
-                            viewModel.deleteLocation()
-                            viewModel.close()
-                        }
-                        snackbar.show()
+                        confirmDeleteLocation(R.string.dismiss_new_location)
                     } else {
                         viewModel.close()
                     }
@@ -108,12 +103,8 @@ class EditLocationFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.delete -> {
-                val snackbar = Snackbar.make(view as CoordinatorLayout, R.string.delete_location, Snackbar.LENGTH_LONG)
-                snackbar.setAction(R.string.ok) {
-                    viewModel.deleteLocation()
-                    viewModel.close()
-                }
-                snackbar.show()
+                val msgResId = if (isNew) R.string.dismiss_new_location else R.string.delete_location
+                confirmDeleteLocation(msgResId)
             }
             else -> {
                 super.onOptionsItemSelected(item)
@@ -121,6 +112,18 @@ class EditLocationFragment : Fragment() {
             }
         }
         return true
+    }
+
+    private fun confirmDeleteLocation(@StringRes msgResId: Int) {
+        context?.let { context ->
+            AlertDialog.Builder(context)
+                    .setMessage(msgResId)
+                    .setPositiveButton(R.string.ok) { _, _ ->
+                        viewModel.deleteLocation()
+                        viewModel.close()
+                    }.setNegativeButton(R.string.cancel, null)
+                    .create().show()
+        }
     }
 
     private fun openAddNote() {

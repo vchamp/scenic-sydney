@@ -8,6 +8,7 @@
     <string name="map">Map</string>
     <string name="add_note">Add note</string>
     <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
     <string name="click_to_add_location">Click on the map to add a location</string>
     <string name="location">Location</string>
     <string name="dismiss_new_location">Dismiss new location?</string>

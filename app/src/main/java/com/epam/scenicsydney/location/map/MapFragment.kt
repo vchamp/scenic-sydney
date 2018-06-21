@@ -21,6 +21,10 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.android.synthetic.main.fragment_map.*
 
+/**
+ * Wrapper fragment for SupportMapFragment. Sets default map settings. Handles all user interaction with the map.
+ * Observes the locations list and updates markers accordingly.
+ */
 class MapFragment : Fragment(), OnMapReadyCallback {
 
     private companion object {
@@ -32,6 +36,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private lateinit var map: GoogleMap
 
+    // activity scope allows to reuse the same view model for the map and list fragments
     private val viewModel: LocationsViewModel by lazy {
         val activity = activity ?: throw IllegalStateException("Not attached")
         ViewModelProviders.of(activity).get(LocationsViewModel::class.java)
@@ -51,6 +56,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         super.onViewCreated(view, savedInstanceState)
         val mapFragment = childFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment
         mapFragment.getMapAsync(this)
+    }
+
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (hidden) {
+            viewModel.setAddLocationMode(false)
+        }
     }
 
     /**
@@ -93,7 +105,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
                 val addedLocation = viewModel.getAddedLocation()
                 if (addedLocation != null) {
-                    viewModel.switchAddLocationMode()
+                    viewModel.setAddLocationMode(false)
                     viewModel.removeAddedLocation()
                     navigation.openEditLocation(addedLocation.id, true)
                 }

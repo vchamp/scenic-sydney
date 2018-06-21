@@ -33,6 +33,10 @@ class LocationsViewModel : ViewModel() {
         addLocationMode.value = !currentMode
     }
 
+    fun setAddLocationMode(addMode: Boolean) {
+        addLocationMode.value = addMode
+    }
+
     fun isAddLocationMode(): Boolean = addLocationMode.value ?: false
 
     fun addLocation(latitude: Double, longitude: Double) {
