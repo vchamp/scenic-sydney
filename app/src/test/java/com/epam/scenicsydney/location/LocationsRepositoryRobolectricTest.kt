@@ -2,10 +2,7 @@ package com.epam.scenicsydney.location
 
 import android.arch.core.executor.testing.InstantTaskExecutorRule
 import android.util.Log
-import com.epam.scenicsydney.inject.DaggerAppComponent
-import com.epam.scenicsydney.inject.Injector
-import com.epam.scenicsydney.inject.RepositoryModule
-import com.epam.scenicsydney.inject.TestAppModule
+import com.epam.scenicsydney.database.createInMemoryDatabase
 import com.epam.scenicsydney.waitForValue
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -30,13 +27,10 @@ class LocationsRepositoryRobolectricTest {
     fun setUp() {
         ShadowLog.stream = System.out
 
-        val repositoryModule = RepositoryModule()
-        Injector.APP_COMPONENT = DaggerAppComponent.builder()
-                .appModule(TestAppModule(RuntimeEnvironment.application))
-                .repositoryModule(repositoryModule)
-                .build()
+        val context = RuntimeEnvironment.application.applicationContext
+        val database = createInMemoryDatabase(context)
 
-        repository = repositoryModule.provideLocationsRepository()
+        repository = LocationsRepository(database)
     }
 
     @After

@@ -16,6 +16,9 @@ import com.epam.scenicsydney.note.EditNoteViewModel
 import kotlinx.android.synthetic.main.fragment_edit_location.*
 import kotlinx.android.synthetic.main.item_note.view.*
 
+/**
+ * Fragment that allows to edit and delete a location, add notes. EditNoteFragment is opened from this fragment.
+ */
 class EditLocationFragment : Fragment() {
 
     companion object {

@@ -13,6 +13,7 @@ import android.widget.Toast.LENGTH_LONG
 import com.epam.scenicsydney.Navigation
 import com.epam.scenicsydney.R
 import com.epam.scenicsydney.location.LocationsViewModel
+import com.epam.scenicsydney.location.LocationsViewModelFactory
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -39,7 +40,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     // activity scope allows to reuse the same view model for the map and list fragments
     private val viewModel: LocationsViewModel by lazy {
         val activity = activity ?: throw IllegalStateException("Not attached")
-        ViewModelProviders.of(activity).get(LocationsViewModel::class.java)
+        ViewModelProviders.of(activity, LocationsViewModelFactory()).get(LocationsViewModel::class.java)
     }
 
     private val navigation: Navigation

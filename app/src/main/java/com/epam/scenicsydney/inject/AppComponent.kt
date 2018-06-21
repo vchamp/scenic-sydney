@@ -7,12 +7,12 @@ import dagger.Component
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = [AppModule::class, RepositoryModule::class])
+@Component(modules = [AppModule::class])
 interface AppComponent {
 
-    fun injectTo(locationsViewModel: LocationsViewModel)
+    fun inject(editLocationViewModel: EditLocationViewModel)
 
-    fun injectTo(editLocationViewModel: EditLocationViewModel)
+    fun locationsRepository(): LocationsRepository
 
-    fun injectTo(locationsRepository: LocationsRepository)
+    fun locationsViewModel(): LocationsViewModel
 }

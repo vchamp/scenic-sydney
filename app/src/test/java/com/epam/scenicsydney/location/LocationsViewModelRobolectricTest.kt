@@ -1,10 +1,7 @@
 package com.epam.scenicsydney.location
 
 import android.arch.core.executor.testing.InstantTaskExecutorRule
-import com.epam.scenicsydney.inject.DaggerAppComponent
-import com.epam.scenicsydney.inject.Injector
-import com.epam.scenicsydney.inject.RepositoryModule
-import com.epam.scenicsydney.inject.TestAppModule
+import com.epam.scenicsydney.database.createInMemoryDatabase
 import com.epam.scenicsydney.waitForValue
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -25,24 +22,25 @@ class LocationsViewModelRobolectricTest {
 
     private lateinit var viewModel: LocationsViewModel
 
+    private lateinit var repository: LocationsRepository
+
     @Before
     fun setUp() {
         ShadowLog.stream = System.out
 
-        val repositoryModule = RepositoryModule()
-        Injector.APP_COMPONENT = DaggerAppComponent.builder()
-                .appModule(TestAppModule(RuntimeEnvironment.application))
-                .repositoryModule(repositoryModule)
-                .build()
+        val context = RuntimeEnvironment.application.applicationContext
+        val database = createInMemoryDatabase(context)
 
-        viewModel = LocationsViewModel()
+        repository = LocationsRepository(database)
 
-        assertNotNull("Repository injected", viewModel.repository)
+        viewModel = LocationsViewModel(repository)
+
+        assertNotNull("Repository injected", repository)
     }
 
     @After
     fun tearDown() {
-        viewModel.repository.close()
+        repository.close()
     }
 
     @Test

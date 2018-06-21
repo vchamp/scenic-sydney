@@ -9,6 +9,9 @@ import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
 import com.epam.scenicsydney.R
 
+/**
+ * Edit location fragment container.
+ */
 class EditLocationActivity : AppCompatActivity() {
 
     companion object {

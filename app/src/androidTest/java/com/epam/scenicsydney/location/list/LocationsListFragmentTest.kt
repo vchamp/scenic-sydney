@@ -14,7 +14,6 @@ import com.epam.scenicsydney.R
 import com.epam.scenicsydney.inject.AndroidTestAppModule
 import com.epam.scenicsydney.inject.DaggerAppComponent
 import com.epam.scenicsydney.inject.Injector
-import com.epam.scenicsydney.inject.RepositoryModule
 import com.epam.scenicsydney.location.edit.EditLocationFragment
 import org.hamcrest.Matchers
 import org.junit.Assert.assertEquals
@@ -37,7 +36,6 @@ class LocationsListFragmentTest {
             assertEquals("com.epam.scenicsydney", appContext.packageName)
             Injector.APP_COMPONENT = DaggerAppComponent.builder()
                     .appModule(AndroidTestAppModule(appContext))
-                    .repositoryModule(RepositoryModule())
                     .build()
         }
     }

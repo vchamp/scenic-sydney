@@ -7,14 +7,11 @@ import com.epam.scenicsydney.inject.Injector
 import com.epam.scenicsydney.model.Location
 import javax.inject.Inject
 
-class LocationsViewModel : ViewModel() {
-
-    @Inject
-    lateinit var repository: LocationsRepository
-
-    init {
-        Injector.injectTo(this)
-    }
+/**
+ * View model for map and list fragments. Holds locations live data, manages locations addition.
+ */
+class LocationsViewModel @Inject constructor(
+        private val repository: LocationsRepository) : ViewModel() {
 
     private val locationsData: LiveData<List<Location>> by lazy {
         repository.getLocations()

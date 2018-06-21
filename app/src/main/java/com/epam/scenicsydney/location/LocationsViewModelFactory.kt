@@ -2,10 +2,14 @@ package com.epam.scenicsydney.location
 
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
+import com.epam.scenicsydney.inject.Injector
 
-class LocationsViewModelFactory(private val repository: LocationsRepository) : ViewModelProvider.NewInstanceFactory() {
+/**
+ * Creates LocationsViewModel using injection.
+ */
+class LocationsViewModelFactory : ViewModelProvider.NewInstanceFactory() {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return LocationsViewModel() as T
+        return Injector.createLocationsViewModel() as T
     }
 }

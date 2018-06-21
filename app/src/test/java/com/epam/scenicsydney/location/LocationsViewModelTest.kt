@@ -5,10 +5,6 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Observer
 import android.content.Context
 import com.epam.scenicsydney.any
-import com.epam.scenicsydney.inject.DaggerAppComponent
-import com.epam.scenicsydney.inject.Injector
-import com.epam.scenicsydney.inject.TestAppModule
-import com.epam.scenicsydney.inject.TestRepositoryModule
 import com.epam.scenicsydney.model.Location
 import org.junit.After
 import org.junit.Assert.*
@@ -67,13 +63,7 @@ class LocationsViewModelTest {
             testLocations.add(it.arguments[0] as Location)
         }
 
-        val testModule = TestRepositoryModule(locationsRepository)
-        Injector.APP_COMPONENT = DaggerAppComponent.builder()
-                .appModule(TestAppModule(context))
-                .repositoryModule(testModule)
-                .build()
-
-        viewModel = LocationsViewModel()
+        viewModel = LocationsViewModel(locationsRepository)
         viewModel.getLocations().observeForever(observer)
     }
 

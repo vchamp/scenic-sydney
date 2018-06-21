@@ -3,25 +3,18 @@ package com.epam.scenicsydney.location
 import android.arch.lifecycle.LiveData
 import android.content.Context
 import com.epam.scenicsydney.database.LocationDatabase
-import com.epam.scenicsydney.inject.Injector
 import com.epam.scenicsydney.model.Location
 import com.epam.scenicsydney.model.Note
 import java.util.concurrent.Executors
 import javax.inject.Inject
 
-class LocationsRepository {
+/**
+ * Single point of access to the locations database.
+ */
+class LocationsRepository @Inject constructor(private val database: LocationDatabase) {
 
-    @Inject
-    lateinit var context: Context
-
-    @Inject
-    lateinit var database: LocationDatabase
-
+    // executor for background operations
     private val executor = Executors.newSingleThreadExecutor()
-
-    init {
-        Injector.injectTo(this)
-    }
 
     fun close() {
         database.close()

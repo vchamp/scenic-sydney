@@ -9,6 +9,9 @@ import com.epam.scenicsydney.model.Location
 import com.epam.scenicsydney.model.Note
 import javax.inject.Inject
 
+/**
+ * Holds location and its notes live data. Save check and close commands are for activity-fragment communication.
+ */
 class EditLocationViewModel(private val locationId: Long) : ViewModel() {
 
     @Inject
