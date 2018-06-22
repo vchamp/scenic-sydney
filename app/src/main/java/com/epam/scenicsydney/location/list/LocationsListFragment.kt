@@ -9,11 +9,9 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.epam.scenicsydney.Navigation
+import android.widget.TextView
 import com.epam.scenicsydney.R
-import com.epam.scenicsydney.location.LocationsViewModel
-import com.epam.scenicsydney.location.getDistanceToCenter
-import com.epam.scenicsydney.location.sortByDistanceFromCenter
+import com.epam.scenicsydney.location.*
 import com.epam.scenicsydney.model.Location
 import kotlinx.android.synthetic.main.item_location.view.*
 
@@ -25,21 +23,21 @@ class LocationsListFragment : Fragment() {
     // activity scope allows to reuse the same view model for map and list fragments
     private val viewModel: LocationsViewModel by lazy {
         val activity = activity ?: throw IllegalStateException("Not attached")
-        ViewModelProviders.of(activity).get(LocationsViewModel::class.java)
+        ViewModelProviders.of(activity, LocationsViewModelFactory()).get(LocationsViewModel::class.java)
     }
 
     private val navigation: Navigation
-        get() =
-            if (activity is Navigation) {
-                activity as Navigation
-            } else throw ClassCastException("Activity must implement Navigation")
+        get() = if (activity is Navigation) {
+            activity as Navigation
+        } else {
+            throw ClassCastException("Activity must implement Navigation")
+        }
 
     private val recyclerView: RecyclerView
         get() = view as RecyclerView
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_locations_list, container, false)
-    }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+            inflater.inflate(R.layout.fragment_locations_list, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -74,6 +72,9 @@ class LocationsListFragment : Fragment() {
 
         private var locationId: Long? = null
 
+        private val titleTextView: TextView = itemView.titleTextView
+        private val distanceTextView: TextView = itemView.distanceTextView
+
         init {
             itemView.setOnClickListener {
                 locationId?.let {
@@ -87,11 +88,11 @@ class LocationsListFragment : Fragment() {
         }
 
         fun setTitle(title: String) {
-            itemView.titleTextView.text = title
+            titleTextView.text = title
         }
 
         fun setDistance(distance: String) {
-            itemView.distanceTextView.text = distance
+            distanceTextView.text = distance
         }
     }
 }

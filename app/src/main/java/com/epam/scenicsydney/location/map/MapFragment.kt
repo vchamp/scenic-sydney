@@ -10,10 +10,10 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
-import com.epam.scenicsydney.Navigation
 import com.epam.scenicsydney.R
 import com.epam.scenicsydney.location.LocationsViewModel
 import com.epam.scenicsydney.location.LocationsViewModelFactory
+import com.epam.scenicsydney.location.Navigation
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -23,16 +23,18 @@ import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.android.synthetic.main.fragment_map.*
 
 /**
- * Wrapper fragment for SupportMapFragment. Sets default map settings. Handles all user interaction with the map.
+ * Wrapper fragment for SupportMapFragment.
+ *
+ * Sets default map settings. Handles all user interaction with the map.
  * Observes the locations list and updates markers accordingly.
  */
 class MapFragment : Fragment(), OnMapReadyCallback {
 
     private companion object {
         val DEFAULT_MAP_CENTER = LatLng(-33.84, 151.25)
+        const val DEFAULT_ZOOM = 12f
         const val MIN_ZOOM = 8f
         const val MAX_ZOOM = 16f
-        const val DEFAULT_ZOOM = 12f
     }
 
     private lateinit var map: GoogleMap
@@ -44,14 +46,14 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private val navigation: Navigation
-        get() =
-            if (activity is Navigation) {
-                activity as Navigation
-            } else throw ClassCastException("Activity must implement Navigation")
+        get() = if (activity is Navigation) {
+            activity as Navigation
+        } else {
+            throw ClassCastException("Activity must implement Navigation")
+        }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_map, container, false)
-    }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+            inflater.inflate(R.layout.fragment_map, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -78,8 +80,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             setMinZoomPreference(MIN_ZOOM)
             setMaxZoomPreference(MAX_ZOOM)
 
-            moveCamera(CameraUpdateFactory.newLatLng(DEFAULT_MAP_CENTER))
-            moveCamera(CameraUpdateFactory.zoomTo(DEFAULT_ZOOM))
+            moveCamera(CameraUpdateFactory.newLatLngZoom(DEFAULT_MAP_CENTER, DEFAULT_ZOOM))
 
             uiSettings.isMapToolbarEnabled = false
 

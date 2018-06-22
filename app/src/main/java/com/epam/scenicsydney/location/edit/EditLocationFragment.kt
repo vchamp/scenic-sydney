@@ -18,6 +18,9 @@ import kotlinx.android.synthetic.main.item_note.view.*
 
 /**
  * Fragment that allows to edit and delete a location, add notes. EditNoteFragment is opened from this fragment.
+ *
+ * Reacts to the save check command from the view model to handle back navigation by saving the title or discarding
+ * changes.
  */
 class EditLocationFragment : Fragment() {
 
@@ -50,7 +53,7 @@ class EditLocationFragment : Fragment() {
                 .get(locationId.toString(), EditLocationViewModel::class.java)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         setHasOptionsMenu(true)
         return inflater.inflate(R.layout.fragment_edit_location, container, false)
     }
@@ -77,6 +80,7 @@ class EditLocationFragment : Fragment() {
 
         viewModel.getSaveCheckCommand().observe(this, Observer { saveCheck ->
             if (saveCheck == true) {
+                // user wants to navigate back - handle the case when the title is empty or save the title otherwise
                 val title = titleEditText.text.toString()
                 if (title.isBlank()) {
                     if (isNew) {
@@ -133,6 +137,9 @@ class EditLocationFragment : Fragment() {
         val fragment = EditNoteFragment()
         val fragmentManager = fragmentManager ?: return
         fragmentManager.beginTransaction().add(R.id.fragmentContainer, fragment).addToBackStack(null).commit()
+
+        // the same view model is reused by this fragment and EditNoteFragment,
+        // it allows to react here to the changes in the new note's live data
         val editNoteViewModel = ViewModelProviders.of(this).get(EditNoteViewModel::class.java)
         editNoteViewModel.setSelectedNote(Note(locationId))
         editNoteViewModel.getSelectedNote().observe(this, Observer { note ->
@@ -158,8 +165,10 @@ class EditLocationFragment : Fragment() {
     }
 
     inner class NoteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val textView = itemView.textView
+
         fun setText(text: String) {
-            itemView.textView.text = text
+            textView.text = text
         }
     }
 }

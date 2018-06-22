@@ -3,7 +3,6 @@ package com.epam.scenicsydney.location
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
-import com.epam.scenicsydney.inject.Injector
 import com.epam.scenicsydney.model.Location
 import javax.inject.Inject
 

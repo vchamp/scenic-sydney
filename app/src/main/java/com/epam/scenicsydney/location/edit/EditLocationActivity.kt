@@ -11,6 +11,10 @@ import com.epam.scenicsydney.R
 
 /**
  * Edit location fragment container.
+ *
+ * Listens to back navigation and sends the save check command to the view model.
+ *
+ * Reacts to the close command from the view model.
  */
 class EditLocationActivity : AppCompatActivity() {
 

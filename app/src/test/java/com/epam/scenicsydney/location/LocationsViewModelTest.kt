@@ -3,7 +3,6 @@ package com.epam.scenicsydney.location
 import android.arch.core.executor.testing.InstantTaskExecutorRule
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.Observer
-import android.content.Context
 import com.epam.scenicsydney.any
 import com.epam.scenicsydney.model.Location
 import org.junit.After
@@ -29,32 +28,27 @@ class LocationsViewModelTest {
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
     @Mock
-    private lateinit var context: Context
-
-    @Mock
     private lateinit var locationsRepository: LocationsRepository
 
     private lateinit var viewModel: LocationsViewModel
 
     // observed list
     private lateinit var locations: List<Location>
-
     private val observer = Observer<List<Location>> {
         locations = it ?: emptyList()
     }
 
     @Before
     fun setUp() {
-        context = mock(Context::class.java)
-
         // changed by mock repository
         val testLocations = Array(INITIAL_LOCATIONS_COUNT) {
-            Location(it.toLong(), false, it.toDouble(), it.toDouble(), "Location $it")
+            Location(it.toLong(), it.toDouble(), it.toDouble(), "Location $it")
         }.toMutableList()
 
         // returned by mock repository
-        val locationsLiveData: MutableLiveData<List<Location>> = MutableLiveData()
-        locationsLiveData.value = testLocations
+        val locationsLiveData = MutableLiveData<List<Location>>().apply {
+            value = testLocations
+        }
 
         locationsRepository = mock(LocationsRepository::class.java)
 

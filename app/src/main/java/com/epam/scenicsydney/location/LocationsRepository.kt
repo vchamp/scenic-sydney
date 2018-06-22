@@ -1,11 +1,10 @@
 package com.epam.scenicsydney.location
 
 import android.arch.lifecycle.LiveData
-import android.content.Context
+import com.epam.scenicsydney.AppExecutors
 import com.epam.scenicsydney.database.LocationDatabase
 import com.epam.scenicsydney.model.Location
 import com.epam.scenicsydney.model.Note
-import java.util.concurrent.Executors
 import javax.inject.Inject
 
 /**
@@ -14,7 +13,7 @@ import javax.inject.Inject
 class LocationsRepository @Inject constructor(private val database: LocationDatabase) {
 
     // executor for background operations
-    private val executor = Executors.newSingleThreadExecutor()
+    private val executor = AppExecutors.diskIO
 
     fun close() {
         database.close()

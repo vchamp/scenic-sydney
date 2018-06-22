@@ -3,13 +3,16 @@ package com.epam.scenicsydney
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
+import com.epam.scenicsydney.location.Navigation
 import com.epam.scenicsydney.location.edit.EditLocationActivity
 import com.epam.scenicsydney.location.list.LocationsListFragment
 import com.epam.scenicsydney.location.map.MapFragment
 import kotlinx.android.synthetic.main.activity_main.*
 
 /**
- * Main activity of the application. Contains map and locations list fragments.
+ *
+ * Main activity of the application. Contains the map and locations list fragments, and navigation view
+ * for switching between them. Implements [Navigation] for opening the edit location screen.
  */
 class MainActivity : AppCompatActivity(), Navigation {
 
@@ -19,6 +22,7 @@ class MainActivity : AppCompatActivity(), Navigation {
         const val SELECTED_NAV_ITEM_ID = "selected_nav_item_id"
     }
 
+    // stores the currently selected navigation item id to save it in an instance state
     private var selectedNavItemId = R.id.map
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,6 +55,7 @@ class MainActivity : AppCompatActivity(), Navigation {
     }
 
     private fun switchFragments(showFragmentTag: String, hideFragmentTag: String, newFragmentConstructor: () -> Fragment) {
+        // show the required fragment and hide the other or just add the new fragment
         val existingFragment = supportFragmentManager.findFragmentByTag(showFragmentTag)
         if (existingFragment != null) {
             val transaction = supportFragmentManager.beginTransaction().show(existingFragment)

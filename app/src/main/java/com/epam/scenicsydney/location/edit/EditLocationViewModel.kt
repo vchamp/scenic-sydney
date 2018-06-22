@@ -3,23 +3,18 @@ package com.epam.scenicsydney.location.edit
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
-import com.epam.scenicsydney.inject.Injector
 import com.epam.scenicsydney.location.LocationsRepository
 import com.epam.scenicsydney.model.Location
 import com.epam.scenicsydney.model.Note
 import javax.inject.Inject
+import kotlin.properties.Delegates
 
 /**
- * Holds location and its notes live data. Save check and close commands are for activity-fragment communication.
+ * Holds the location and its notes live data. Save check and close commands are for activity-fragment communication.
  */
-class EditLocationViewModel(private val locationId: Long) : ViewModel() {
+class EditLocationViewModel @Inject constructor(private val repository: LocationsRepository) : ViewModel() {
 
-    @Inject
-    lateinit var repository: LocationsRepository
-
-    init {
-        Injector.injectTo(this)
-    }
+    var locationId: Long by Delegates.notNull()
 
     private val locationData: LiveData<Location> by lazy {
         repository.getLocation(locationId)

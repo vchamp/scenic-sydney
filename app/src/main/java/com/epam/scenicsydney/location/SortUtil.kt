@@ -14,6 +14,9 @@ fun getDistanceToCenter(location: Location): Float {
     return result[0]
 }
 
+/**
+ * @return a new list that is sorted by locations' distance to Sydney center
+ */
 fun sortByDistanceFromCenter(list: List<Location>): List<Location> {
     return list.sortedWith(compareBy {
         getDistanceToCenter(it)
